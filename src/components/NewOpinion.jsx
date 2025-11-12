@@ -1,35 +1,48 @@
+import { use } from "react";
 import { useActionState } from "react";
+import { OpinionsContext } from "../store/opinions-context";
+
 
 export function NewOpinion() {
-  function shareOpinionAction(prev,formData) {
-    const title = formData.get("title");
-    const body = formData.get("body");
-    const userName = formData.get("userName");
+  const { addOpinion } = use(OpinionsContext);
+ async function shareOpinionAction(prev, formData) {
+   const title = formData.get("title");
+   const body = formData.get("body");
+   const userName = formData.get("userName");
 
-    let errors = [];
-    if (title.trim().length < 5) {
-      errors.push("Title must be at least five charcter long");
-    }
-    if (body.trim().length < 10 || body.trim().length > 300) {
-      errors.push("Title must be between 10 and 300 charcter long");
-    }
+   let errors = [];
+   if (title.trim().length < 5) {
+     errors.push("Title must be at least five charcter long");
+   }
+   if (body.trim().length < 10 || body.trim().length > 300) {
+     errors.push("Title must be between 10 and 300 charcter long");
+   }
 
-    if(!userName.trim()){
-      errors.push("Please provide your name")
-    }
+   if (!userName.trim()) {
+     errors.push("Please provide your name");
+   }
 
-    if(errors.length > 0){
-      return {
-        errors,enteredValues:{
-          title,body,userName
-        }
+   if (errors.length > 0) {
+     return {
+       errors,
+       enteredValues: {
+         title,
+         body,
+         userName,
+       },
+     };
+   }
+   // submit to backend
+   const enteredOpinionData = {
+     title,
+     body,
+     userName,
+   };
 
-      }
-    }
-    // submit to backend
+   await addOpinion(enteredOpinionData);
 
-    return {errors : null}
-  }
+   return { errors: null };
+ }
 
   const [formState,formAction,] = useActionState(shareOpinionAction, {errors:null})
   return (
